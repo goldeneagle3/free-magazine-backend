@@ -1,0 +1,9 @@
+info:
+  application:
+    name: free-magazine
+    description: An e-magazine app in which anybody talk about anything.
+    author: goldeneagle3
+    version: '@project.version@'
+spring:
+  profiles:
+    active: prod
