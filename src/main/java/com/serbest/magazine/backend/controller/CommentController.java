@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 5600, allowCredentials="true")
+@CrossOrigin(origins = "https://magazine-app.netlify.app/", maxAge = 5600, allowCredentials="true")
 @RestController
 @RequestMapping("/api/comments")
 public class CommentController {
