@@ -117,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
         ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
 
-        System.out.println(userDetails.getImageId());
+        System.out.println(jwtRefreshCookie);
 
         JWTAuthResponse jwtAuthResponse = new JWTAuthResponse();
         jwtAuthResponse.setAccessToken(accessToken);
