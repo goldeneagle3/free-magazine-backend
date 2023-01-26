@@ -190,6 +190,11 @@ public class PostServiceImpl implements PostService {
     public PostResponseDTO updatePost(String id, PostUpdateRequestDTO requestDTO) throws IOException {
         Post post = getPost(id);
 
+        Category category = categoryRepository.findByName(requestDTO.getCategory()).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "name", requestDTO.getCategory())
+        );
+
+        post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
         post.setSubtitle(requestDTO.getSubtitle());
         post.setContent(requestDTO.getContent());
@@ -209,6 +214,11 @@ public class PostServiceImpl implements PostService {
                 () -> new ResourceNotFoundException("Post", "id", id)
         );
 
+        Category category = categoryRepository.findByName(requestDTO.getCategory()).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "name", requestDTO.getCategory())
+        );
+
+        post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
         post.setSubtitle(requestDTO.getSubtitle());
         post.setContent(requestDTO.getContent());
