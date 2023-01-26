@@ -102,7 +102,7 @@ public class JwtUtils {
     }
 
     private ResponseCookie generateCookie(String name, String value, String path) {
-        ResponseCookie cookie = ResponseCookie.from(name, value).path("/").maxAge(24 * 60 * 60).secure(true).httpOnly(true).build();
+        ResponseCookie cookie = ResponseCookie.from(name, value).path("/").sameSite("None").maxAge(24 * 60 * 60).secure(true).httpOnly(true).build();
         return cookie;
     }
 
