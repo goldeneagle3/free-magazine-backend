@@ -45,6 +45,7 @@ public class UserMapper {
                 .lastName(author.getLastName())
                 .description(author.getDescription())
                 .imageId(author.getProfileImage().getId())
+                .imageExist(author.getProfileImage().getName())
                 .createDateTime(author.getCreateDateTime())
                 .updateDateTime(author.getUpdateDateTime())
                 .build();

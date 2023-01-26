@@ -20,6 +20,7 @@ public class AuthorResponseDTO {
     private String lastName;
     private String description;
     private UUID imageId;
+    private String imageExist;
     private LocalDateTime createDateTime;
     private LocalDateTime updateDateTime;
 }
