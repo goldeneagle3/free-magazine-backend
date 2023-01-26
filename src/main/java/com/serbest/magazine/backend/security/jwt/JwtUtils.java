@@ -102,7 +102,7 @@ public class JwtUtils {
     }
 
     private ResponseCookie generateCookie(String name, String value, String path) {
-        ResponseCookie cookie = ResponseCookie.from(name, value).path("/").domain("magazine-app.netlify.app").maxAge(24 * 60 * 60).httpOnly(true).secure(true).build();
+        ResponseCookie cookie = ResponseCookie.from(name, value).path("/").maxAge(24 * 60 * 60).httpOnly(true).secure(true).build();
         return cookie;
     }
 
