@@ -52,8 +52,7 @@ public class RefreshTokenService {
 
     @Transactional
     public int deleteByUsername(String username) {
-        Author author = authorRepository.findByUsername(username).get();
-        System.out.println(author.getUsername());
+        Author author = authorRepository.findByUsernameOrEmail(username,username).get();
         return refreshTokenRepository.deleteByAuthor(author);
     }
 }

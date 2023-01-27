@@ -30,7 +30,6 @@ public class AuthController {
     @PostMapping(value = {"/login", "/signin"})
     public ResponseEntity<UserInfoResponse> login(@RequestBody LoginRequestDTO loginDto, HttpServletRequest request) {
         JWTAuthResponse jwtAuthResponse = authService.login(request, loginDto);
-        System.out.println(jwtAuthResponse.getRefreshTokenCookie());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtAuthResponse.getRefreshTokenCookie().toString())
                 .body(userMapper.jwtAuthResponseToUserInfoResponse(jwtAuthResponse));

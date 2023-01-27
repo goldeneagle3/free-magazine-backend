@@ -30,7 +30,6 @@ public class ImageController {
                     .contentType(MediaType.parseMediaType(imageModel.getType()))
                     .body(new ByteArrayResource(imageModel.getPicByte()));
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
