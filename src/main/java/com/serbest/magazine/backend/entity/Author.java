@@ -25,6 +25,8 @@ public class Author {
 
     private String firstName;
     private String lastName;
+
+    @Lob
     private String description;
 
     @Column(nullable = false)
