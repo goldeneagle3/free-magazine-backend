@@ -14,10 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AuthorUpdateRequestDTO {
     private String firstName;
     private String lastName;
-
-    @Size(max = 250, message = "Please provide a bio less than 250 characters.")
     private String description;
-
     private MultipartFile image;
     private Boolean imageProtect;
 }

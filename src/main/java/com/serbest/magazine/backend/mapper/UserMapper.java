@@ -11,7 +11,7 @@ import com.serbest.magazine.backend.entity.ImageModel;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+
 import java.util.stream.Collectors;
 
 @Component
