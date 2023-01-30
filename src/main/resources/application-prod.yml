@@ -1,5 +1,7 @@
 spring:
   datasource:
+    hikari:
+      auto-commit: false
     url: jdbc:postgresql://${PROD_DB_HOST}:${PROD_DB_PORT}/${PROD_DB_NAME}
     username: ${PROD_DB_USERNAME}
     password: ${PROD_DB_PASSWORD}
@@ -12,7 +14,7 @@ spring:
           lob:
             non_contextual_creation: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   servlet:
     multipart:

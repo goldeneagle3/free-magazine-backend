@@ -1,6 +1,5 @@
 package com.serbest.magazine.backend.repository;
 
-import com.serbest.magazine.backend.entity.Category;
 import com.serbest.magazine.backend.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
