@@ -12,12 +12,11 @@ import com.serbest.magazine.backend.mapper.PostMapper;
 import com.serbest.magazine.backend.repository.AuthorRepository;
 import com.serbest.magazine.backend.repository.CategoryRepository;
 import com.serbest.magazine.backend.repository.PostRepository;
+import com.serbest.magazine.backend.service.ImageModelService;
 import com.serbest.magazine.backend.service.PostService;
 import com.serbest.magazine.backend.security.CheckAuthorization;
 import com.serbest.magazine.backend.util.UploadImage;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Optional;
@@ -35,20 +33,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
-    private final Path root = Paths.get("uploads");
     private final CheckAuthorization checkAuthorization;
     private final CategoryRepository categoryRepository;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final AuthorRepository userRepository;
+    private final ImageModelService imageModelService;
 
     public PostServiceImpl(CheckAuthorization checkAuthorization, CategoryRepository categoryRepository,
-                           PostRepository postRepository, PostMapper postMapper, AuthorRepository userRepository) {
+                           PostRepository postRepository, PostMapper postMapper, AuthorRepository userRepository, ImageModelService imageModelService) {
         this.checkAuthorization = checkAuthorization;
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
         this.postMapper = postMapper;
         this.userRepository = userRepository;
+        this.imageModelService = imageModelService;
     }
 
     @Override
@@ -73,7 +72,7 @@ public class PostServiceImpl implements PostService {
         MultipartFile file = requestDTO.getImage();
         String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(filename));
+            imageModelService.upload(file.getInputStream(),filename);
             post = postMapper.postRequestDTOToPost(requestDTO);
             post.setAuthor(user.get());
             post.setCategory(category.get());
@@ -101,7 +100,7 @@ public class PostServiceImpl implements PostService {
         MultipartFile file = requestDTO.getImage();
         String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
-            Files.copy(file.getInputStream(), this.root.resolve(filename));
+            imageModelService.upload(file.getInputStream(),filename);
             post = postMapper.postCreateEditorRequestDTOToPost(requestDTO);
             post.setAuthor(user);
             post.setCategory(category);
@@ -214,7 +213,7 @@ public class PostServiceImpl implements PostService {
         try {
             if (!requestDTO.getImageProtect()) {
                 post.setPostImage(filename);
-                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+                imageModelService.upload(requestDTO.getImage().getInputStream(),filename);
             }
             return postMapper.postToPostResponseDTO(postRepository.save(post));
         } catch (Exception e) {
@@ -243,7 +242,7 @@ public class PostServiceImpl implements PostService {
         try {
             if (!requestDTO.getImageProtect()) {
                 post.setPostImage(filename);
-                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+                imageModelService.upload(requestDTO.getImage().getInputStream(), filename);
             }
             return postMapper.postToPostResponseDTO(postRepository.save(post));
         } catch (Exception e) {

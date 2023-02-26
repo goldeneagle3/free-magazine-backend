@@ -13,6 +13,7 @@ import com.serbest.magazine.backend.repository.AuthorRepository;
 import com.serbest.magazine.backend.repository.RoleRepository;
 import com.serbest.magazine.backend.security.CheckAuthorization;
 import com.serbest.magazine.backend.service.AuthorService;
+import com.serbest.magazine.backend.service.ImageModelService;
 import com.serbest.magazine.backend.util.UploadImage;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -20,25 +21,24 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
-    private final Path root = Paths.get("uploads");
     private final RoleRepository roleRepository;
     private final AuthorRepository authorRepository;
     private final UserMapper userMapper;
     private final CheckAuthorization checkAuthorization;
+    private final ImageModelService imageModelService;
 
     public AuthorServiceImpl(RoleRepository roleRepository, AuthorRepository authorRepository, UserMapper userMapper,
-                             CheckAuthorization checkAuthorization) {
+                             CheckAuthorization checkAuthorization, ImageModelService imageModelService) {
         this.roleRepository = roleRepository;
         this.authorRepository = authorRepository;
         this.userMapper = userMapper;
         this.checkAuthorization = checkAuthorization;
+        this.imageModelService = imageModelService;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AuthorServiceImpl implements AuthorService {
         try {
             if (!requestDTO.getImageProtect()) {
                 author.setProfileImage(filename);
-                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+                imageModelService.upload(requestDTO.getImage().getInputStream(),filename);
             }
             return userMapper.authorToAuthorResponseDTO(authorRepository.save(author));
         } catch (Exception e) {
