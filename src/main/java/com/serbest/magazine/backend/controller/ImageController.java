@@ -4,6 +4,7 @@ import com.serbest.magazine.backend.entity.ImageModel;
 import com.serbest.magazine.backend.service.ImageModelService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,5 +33,13 @@ public class ImageController {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @GetMapping("/download/{filename:.+}")
+    public ResponseEntity<Resource> getImage(@PathVariable String filename) throws Exception {
+        Resource file = imageModelService.load(filename);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
     }
 }

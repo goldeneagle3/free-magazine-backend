@@ -1,4 +1,4 @@
-package com.serbest.magazine.backend.dto.user;
+package com.serbest.magazine.backend.dto.contact;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,16 +10,13 @@ import java.util.UUID;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class AuthorResponseDTO {
+@AllArgsConstructor
+public class ContactResponseDTO {
     private UUID id;
-    private String username;
     private String email;
-    private String firstName;
-    private String lastName;
-    private String description;
-    private String image;
+    private String title;
+    private String content;
+    private Boolean read;
     private LocalDateTime createDateTime;
-    private LocalDateTime updateDateTime;
 }

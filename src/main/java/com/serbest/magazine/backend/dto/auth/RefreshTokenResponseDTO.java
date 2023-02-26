@@ -16,7 +16,7 @@ import java.util.UUID;
 public class RefreshTokenResponseDTO {
     private String accessToken;
     private String username;
-    private UUID imageId;
+    private String image;
     private List<String> roles;
     private String message;
 }

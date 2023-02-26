@@ -21,8 +21,7 @@ public class CommentMapper {
                 .createDateTime(comment.getCreateDateTime())
                 .username(comment.getAuthor().getUsername())
                 .updateDateTime(comment.getUpdateDateTime())
-                .userImageId(comment.getAuthor().getProfileImage().getId())
-                .userImageMimType(comment.getAuthor().getProfileImage().getType())
+                .userImage(comment.getAuthor().getProfileImage())
                 .build();
     }
 }

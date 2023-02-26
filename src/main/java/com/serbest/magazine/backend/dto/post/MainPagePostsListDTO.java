@@ -17,8 +17,7 @@ public class MainPagePostsListDTO {
     private String title;
     private String category;
     private String username;
-    private UUID imageId;
-    private String imageMimType;
+    private String image;
     private Long comments;
     private LocalDateTime createDateTime;
 }

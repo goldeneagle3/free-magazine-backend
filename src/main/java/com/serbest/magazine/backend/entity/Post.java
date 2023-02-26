@@ -38,16 +38,7 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "post_images",
-            joinColumns = {
-                    @JoinColumn(name = "post_id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "image_id")
-            }
-    )
-    private ImageModel postImage;
+    private String postImage;
 
     @CreationTimestamp
     private LocalDateTime createDateTime;
@@ -56,7 +47,7 @@ public class Post {
     private LocalDateTime updateDateTime;
 
 
-    public Post(UUID postId, String title, String subtitle, String content,Boolean active, Category category,Author author, ImageModel postImage, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Post(UUID postId, String title, String subtitle, String content,Boolean active, Category category,Author author, String postImage, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
         this.postId = postId;
         this.title = title;
         this.subtitle = subtitle;
@@ -156,14 +147,11 @@ public class Post {
         this.comments = comments;
     }
 
-    public ImageModel getPostImage() {
-        if (postImage == null){
-            return new ImageModel();
-        };
+    public String getPostImage() {
         return postImage;
     }
 
-    public void setPostImage(ImageModel postImage) {
+    public void setPostImage(String postImage) {
         this.postImage = postImage;
     }
 
@@ -191,7 +179,7 @@ public class Post {
         private Boolean active;
         private Category category;
         private Author author;
-        private ImageModel postImage;
+        private String postImage;
 
         private Builder() {
         }
@@ -235,7 +223,7 @@ public class Post {
             return this;
         }
 
-        public Builder postImage(ImageModel val) {
+        public Builder postImage(String val) {
             postImage = val;
             return this;
         }

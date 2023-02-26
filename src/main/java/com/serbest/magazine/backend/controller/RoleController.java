@@ -2,11 +2,10 @@ package com.serbest.magazine.backend.controller;
 
 import com.serbest.magazine.backend.dto.auth.RoleRequestDTO;
 import com.serbest.magazine.backend.dto.auth.RoleResponseDTO;
-import com.serbest.magazine.backend.entity.Role;
 import com.serbest.magazine.backend.service.RoleService;
-import jakarta.annotation.security.RolesAllowed;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

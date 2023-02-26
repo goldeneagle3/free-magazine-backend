@@ -2,14 +2,12 @@ package com.serbest.magazine.backend.controller;
 
 import com.serbest.magazine.backend.dto.category.CategoryRequestDTO;
 import com.serbest.magazine.backend.dto.category.CategoryResponseDTO;
-import com.serbest.magazine.backend.dto.category.CategoryUpdateRequestDTO;
 import com.serbest.magazine.backend.dto.general.MessageResponseDTO;
 import com.serbest.magazine.backend.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @CrossOrigin(origins = {"http://localhost:3000", "https://magazine-app.netlify.app"}, maxAge = 3600, allowCredentials="true")

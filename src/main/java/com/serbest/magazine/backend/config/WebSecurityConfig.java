@@ -4,7 +4,6 @@ import com.serbest.magazine.backend.security.CustomAccessDeniedHandler;
 import com.serbest.magazine.backend.security.jwt.AuthEntryPointJwt;
 import com.serbest.magazine.backend.security.jwt.AuthTokenFilter;
 import com.serbest.magazine.backend.security.jwt.JwtUtils;
-import com.serbest.magazine.backend.security.services.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -20,13 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 
 @Configuration
 @EnableMethodSecurity
@@ -84,6 +77,8 @@ public class WebSecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/likes/**").permitAll()
                                 .requestMatchers("/api/auth/logout").authenticated()
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/contact").permitAll()
+                                .requestMatchers("/api/administration/contact/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/administration/**").permitAll()
                                 .requestMatchers("/api/administration/**").hasRole("ADMIN")
                                 .requestMatchers("/api/posts/**").hasAnyRole("AUTHOR", "EDITOR", "ADMIN")

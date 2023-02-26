@@ -1,14 +1,11 @@
 package com.serbest.magazine.backend.mapper;
 
 import com.serbest.magazine.backend.dto.post.*;
-import com.serbest.magazine.backend.entity.ImageModel;
 import com.serbest.magazine.backend.entity.Post;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-
 
 @Component
 public class PostMapper {
@@ -20,11 +17,9 @@ public class PostMapper {
                 .subtitle(post.getSubtitle())
                 .content(post.getContent())
                 .category(post.getCategory().getName())
-                .imageId(post.getPostImage().getId())
-                .imageMimType(post.getPostImage().getType())
+                .image(post.getPostImage())
                 .username(post.getAuthor().getUsername())
-                .profileImageId(post.getAuthor().getProfileImage().getId())
-                .profileImageMimType(post.getAuthor().getProfileImage().getName())
+                .profileImage(post.getAuthor().getProfileImage())
                 .comments(post.getComments().stream().count())
                 .createDateTime(post.getCreateDateTime())
                 .updateDateTime(post.getUpdateDateTime())
@@ -37,23 +32,11 @@ public class PostMapper {
                 .title(postRequestDTO.getTitle())
                 .subtitle(postRequestDTO.getSubtitle())
                 .content(postRequestDTO.getContent())
-                .postImage(uploadImage(postRequestDTO.getImage()))
                 .active(true)
                 .build();
     }
 
     public Post postCreateEditorRequestDTOToPost(PostCreateEditorRequestDTO postRequestDTO) throws IOException {
-        return Post.Builder
-                .newBuilder()
-                .title(postRequestDTO.getTitle())
-                .subtitle(postRequestDTO.getSubtitle())
-                .content(postRequestDTO.getContent())
-                .postImage(uploadImage(postRequestDTO.getImage()))
-                .active(true)
-                .build();
-    }
-
-    public Post postResponseDTOToPostTwo(PostRequestDTO postRequestDTO){
         return Post.Builder
                 .newBuilder()
                 .title(postRequestDTO.getTitle())
@@ -75,17 +58,7 @@ public class PostMapper {
     }
 
     public FirstFivePostsListDTO postToFirstFivePostsListDTO(Post post) {
-        return new FirstFivePostsListDTO(post.getPostId(), post.getPostImage().getId(), post.getTitle());
-    }
-
-    public FourPostsForTopResponseDTO postToFourPostsForTopResponseDTO(Post post) {
-        return FourPostsForTopResponseDTO.builder()
-                .id(post.getPostId())
-                .title(post.getTitle())
-                .username(post.getAuthor().getUsername())
-                .category(post.getCategory().getName())
-                .imageId(post.getPostImage().getId())
-                .build();
+        return new FirstFivePostsListDTO(post.getPostId(), post.getPostImage(), post.getTitle());
     }
 
     public MainPagePostsListDTO postToMainPagePostsListDTO(Post post){
@@ -94,8 +67,7 @@ public class PostMapper {
                 .title(post.getTitle())
                 .category(post.getCategory().getName())
                 .username(post.getAuthor().getUsername())
-                .imageId(post.getPostImage().getId())
-                .imageMimType(post.getPostImage().getName())
+                .image(post.getPostImage())
                 .comments(post.getComments().stream().count())
                 .createDateTime(post.getCreateDateTime())
                 .build();
@@ -108,13 +80,6 @@ public class PostMapper {
                 .category(post.getCategory().getName())
                 .username(post.getAuthor().getUsername())
                 .build();
-    }
-
-    private ImageModel uploadImage(MultipartFile file) throws IOException {
-        if (file == null) {
-            return new ImageModel();
-        }
-        return new ImageModel(file.getOriginalFilename(), file.getContentType(), file.getBytes());
     }
 
 }

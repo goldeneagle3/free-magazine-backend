@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
@@ -69,10 +70,14 @@ public class PostServiceImpl implements PostService {
         }
 
         Post post = null;
+        MultipartFile file = requestDTO.getImage();
+        String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
+            Files.copy(file.getInputStream(), this.root.resolve(filename));
             post = postMapper.postRequestDTOToPost(requestDTO);
             post.setAuthor(user.get());
             post.setCategory(category.get());
+            post.setPostImage(filename);
 
             return postMapper.postToPostCreateResponseDTO(postRepository.save(post));
         } catch (IOException e) {
@@ -93,10 +98,14 @@ public class PostServiceImpl implements PostService {
 
 
         Post post = null;
+        MultipartFile file = requestDTO.getImage();
+        String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
+            Files.copy(file.getInputStream(), this.root.resolve(filename));
             post = postMapper.postCreateEditorRequestDTOToPost(requestDTO);
             post.setAuthor(user);
             post.setCategory(category);
+            post.setPostImage(filename);
 
             return postMapper.postToPostCreateResponseDTO(postRepository.save(post));
         } catch (IOException e) {
@@ -173,9 +182,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDTO activatePost(String id){
+    public PostResponseDTO activatePost(String id) {
         Post post = postRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResourceNotFoundException("Post","id",id)
+                () -> new ResourceNotFoundException("Post", "id", id)
         );
         post.setActive(true);
 
@@ -194,14 +203,19 @@ public class PostServiceImpl implements PostService {
                 () -> new ResourceNotFoundException("Category", "name", requestDTO.getCategory())
         );
 
+        String filename = null;
+        if (!requestDTO.getImageProtect()) {
+            filename =  UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
+        }
         post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
         post.setSubtitle(requestDTO.getSubtitle());
         post.setContent(requestDTO.getContent());
-        if (!requestDTO.getImageProtect()) {
-            post.setPostImage(UploadImage.uploadImage(requestDTO.getImage()));
-        }
         try {
+            if (!requestDTO.getImageProtect()) {
+                post.setPostImage(filename);
+                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+            }
             return postMapper.postToPostResponseDTO(postRepository.save(post));
         } catch (Exception e) {
             throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -218,14 +232,19 @@ public class PostServiceImpl implements PostService {
                 () -> new ResourceNotFoundException("Category", "name", requestDTO.getCategory())
         );
 
+        String filename = null;
+        if (!requestDTO.getImageProtect()) {
+            filename =  UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
+        }
         post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
         post.setSubtitle(requestDTO.getSubtitle());
         post.setContent(requestDTO.getContent());
-        if (!requestDTO.getImageProtect()) {
-            post.setPostImage(UploadImage.uploadImage(requestDTO.getImage()));
-        }
         try {
+            if (!requestDTO.getImageProtect()) {
+                post.setPostImage(filename);
+                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+            }
             return postMapper.postToPostResponseDTO(postRepository.save(post));
         } catch (Exception e) {
             throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());

@@ -18,6 +18,6 @@ public class JWTAuthResponse {
     private UUID userId;
     private String username;
     private String email;
-    private UUID imageId;
+    private String image;
     private List<String> roles;
 }

@@ -124,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
         jwtAuthResponse.setUserId(userDetails.getId());
         jwtAuthResponse.setEmail(userDetails.getEmail());
         jwtAuthResponse.setUsername(userDetails.getUsername());
-        jwtAuthResponse.setImageId(userDetails.getImageId());
+        jwtAuthResponse.setImage(userDetails.getImage());
 
         return jwtAuthResponse;
     }

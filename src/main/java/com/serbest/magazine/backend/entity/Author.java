@@ -44,16 +44,7 @@ public class Author {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Like> likes;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "profile_image",
-            joinColumns = {
-                    @JoinColumn(name = "author_id", referencedColumnName = "id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "image_id", referencedColumnName = "id")
-            }
-    )
-    private ImageModel profileImage;
+    private String profileImage;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "author_roles",
@@ -74,7 +65,7 @@ public class Author {
 
     public Author(UUID id, String username, String email, String firstName,
                   String lastName, String description, String password,
-                  Boolean active, ImageModel profileImage, Set<Role> roles,
+                  Boolean active, String profileImage, Set<Role> roles,
                   LocalDateTime createDateTime, LocalDateTime updateDateTime) {
         this.id = id;
         this.username = username;
@@ -197,14 +188,11 @@ public class Author {
         this.likes = likes;
     }
 
-    public ImageModel getProfileImage() {
-        if (profileImage == null){
-            return new ImageModel();
-        };
+    public String getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(ImageModel profileImage) {
+    public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
 
@@ -244,7 +232,7 @@ public class Author {
         private List<Post> posts;
         private List<Comment> comments;
         private List<Like> likes;
-        private ImageModel profileImage;
+        private String profileImage;
         private Set<Role> roles;
         private LocalDateTime createDateTime;
         private LocalDateTime updateDateTime;
@@ -311,7 +299,7 @@ public class Author {
             return this;
         }
 
-        public Builder profileImage(ImageModel val) {
+        public Builder profileImage(String val) {
             profileImage = val;
             return this;
         }

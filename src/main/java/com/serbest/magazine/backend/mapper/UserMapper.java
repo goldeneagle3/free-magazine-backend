@@ -30,7 +30,6 @@ public class UserMapper {
                 .email(requestDTO.getEmail())
                 .firstName(requestDTO.getFirstName())
                 .lastName(requestDTO.getLastName())
-                .profileImage(new ImageModel())
                 .active(true)
                 .password(passwordEncoder.encode(requestDTO.getPassword()))
                 .build();
@@ -44,8 +43,7 @@ public class UserMapper {
                 .firstName(author.getFirstName())
                 .lastName(author.getLastName())
                 .description(author.getDescription())
-                .imageId(author.getProfileImage().getId())
-                .imageExist(author.getProfileImage().getName())
+                .image(author.getProfileImage())
                 .createDateTime(author.getCreateDateTime())
                 .updateDateTime(author.getUpdateDateTime())
                 .build();
@@ -58,8 +56,7 @@ public class UserMapper {
                 .firstName(author.getFirstName())
                 .lastName(author.getLastName())
                 .description(author.getDescription())
-                .imageId(author.getProfileImage().getId())
-                .imageName(author.getProfileImage().getName())
+                .image(author.getProfileImage())
                 .build();
     }
 
@@ -68,7 +65,7 @@ public class UserMapper {
                 jwtAuthResponse.getUserId(),
                 jwtAuthResponse.getUsername(),
                 jwtAuthResponse.getEmail(),
-                jwtAuthResponse.getImageId(),
+                jwtAuthResponse.getImage(),
                 jwtAuthResponse.getRoles(),
                 jwtAuthResponse.getAccessToken()
         );
@@ -77,7 +74,7 @@ public class UserMapper {
     public RefreshTokenResponseDTO authorToRefreshTokenResponseDTO(Author author) {
         return RefreshTokenResponseDTO.builder()
                 .username(author.getUsername())
-                .imageId(author.getProfileImage().getId())
+                .image(author.getProfileImage())
                 .roles(author.getRoles().stream().map(r -> r.getName()).collect(Collectors.toList()))
                 .build();
     }

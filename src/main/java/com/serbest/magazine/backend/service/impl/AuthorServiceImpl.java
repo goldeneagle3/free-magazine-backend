@@ -19,12 +19,15 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
-
+    private final Path root = Paths.get("uploads");
     private final RoleRepository roleRepository;
     private final AuthorRepository authorRepository;
     private final UserMapper userMapper;
@@ -73,14 +76,24 @@ public class AuthorServiceImpl implements AuthorService {
     public AuthorResponseDTO updateUser(String userId, AuthorUpdateRequestDTO requestDTO) throws IOException {
         Author author = getAuthor(userId);
 
+        String filename = null;
+        if (!requestDTO.getImageProtect()) {
+            filename =  UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
+        }
+
         author.setFirstName(requestDTO.getFirstName());
         author.setLastName(requestDTO.getLastName());
         author.setDescription(requestDTO.getDescription());
-        if (!requestDTO.getImageProtect()) {
-            author.setProfileImage(UploadImage.uploadImage(requestDTO.getImage()));
-        }
 
-        return userMapper.authorToAuthorResponseDTO(authorRepository.save(author));
+        try {
+            if (!requestDTO.getImageProtect()) {
+                author.setProfileImage(filename);
+                Files.copy(requestDTO.getImage().getInputStream(), this.root.resolve(filename));
+            }
+            return userMapper.authorToAuthorResponseDTO(authorRepository.save(author));
+        } catch (Exception e) {
+            throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
     @Override

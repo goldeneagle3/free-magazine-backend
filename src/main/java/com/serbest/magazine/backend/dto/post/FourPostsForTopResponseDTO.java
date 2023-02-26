@@ -16,5 +16,5 @@ public class FourPostsForTopResponseDTO {
     private String title;
     private String username;
     private String category;
-    private UUID imageId;
+    private String image;
 }

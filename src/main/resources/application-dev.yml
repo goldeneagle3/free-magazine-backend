@@ -1,5 +1,7 @@
 spring:
   datasource:
+    hikari:
+      auto-commit: false
     url: jdbc:postgresql://localhost:5432/magazine
     username: postgres
     password: Mal.asiye3
@@ -10,12 +12,12 @@ spring:
           lob:
             non_contextual_creation: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   servlet:
     multipart:
       enabled: true
       file-size-threshold: 2KB
-      max-file-size: 2MB
+      max-file-size: 1MB
       max-request-size: 5MB
 magazine:
   app:

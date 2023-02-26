@@ -24,20 +24,17 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
-    private UUID imageId;
-
-    private String mimType;
+    private String image;
 
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(UUID id, String username, String email, String password,
-                           UUID imageId, String mimType, Collection<? extends GrantedAuthority> authorities) {
+                           String image, Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.imageId = imageId;
-        this.mimType = mimType;
+        this.image = image;
         this.authorities = authorities;
     }
 
@@ -51,8 +48,7 @@ public class UserDetailsImpl implements UserDetails {
                 author.getUsername(),
                 author.getEmail(),
                 author.getPassword(),
-                author.getProfileImage().getId(),
-                author.getProfileImage().getType(),
+                author.getProfileImage(),
                 authorities);
     }
 
@@ -69,12 +65,8 @@ public class UserDetailsImpl implements UserDetails {
         return email;
     }
 
-    public UUID getImageId() {
-        return imageId;
-    }
-
-    public String getMimType() {
-        return mimType;
+    public String getImage() {
+        return image;
     }
 
     @Override
