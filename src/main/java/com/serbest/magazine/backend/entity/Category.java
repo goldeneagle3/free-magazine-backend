@@ -14,7 +14,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(name = "name",nullable = false,unique = true)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -23,14 +23,13 @@ public class Category {
     private Boolean active;
 
 
-
     public Category(UUID id, String name, Boolean active) {
         this.id = id;
         this.name = name;
         this.active = active;
     }
 
-    public Category(String name){
+    public Category(String name) {
         this.name = name;
     }
 
@@ -39,7 +38,8 @@ public class Category {
         this.active = active;
     }
 
-    public Category(){}
+    public Category() {
+    }
 
     public UUID getId() {
         return id;

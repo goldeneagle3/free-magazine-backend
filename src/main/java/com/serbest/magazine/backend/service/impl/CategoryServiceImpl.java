@@ -10,6 +10,7 @@ import com.serbest.magazine.backend.mapper.CategoryMapper;
 import com.serbest.magazine.backend.repository.CategoryRepository;
 import com.serbest.magazine.backend.repository.PostRepository;
 import com.serbest.magazine.backend.service.CategoryService;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +35,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public MessageResponseDTO createCategory(CategoryRequestDTO categoryRequestDTO) {
-
-        Category category = null;
+        Assert.notNull(categoryRequestDTO.getName(), "Please , provide a valid category name.");
+        checkValidateAndSanitizeInput(categoryRequestDTO.getName());
         try {
-            category = categoryRepository.save(categoryMapper.categoryRequestToCategory(categoryRequestDTO));
+            Category category = categoryRepository.save(categoryMapper.categoryRequestToCategory(categoryRequestDTO));
             return new MessageResponseDTO("New Category " + category.getName() + " created!");
         } catch (Exception e) {
             throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -54,6 +55,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public MessageResponseDTO updateCategory(String id, CategoryRequestDTO requestDTO) {
+        Assert.notNull(id, "Please , provide a valid category id.");
+        checkValidateAndSanitizeInput(requestDTO.getName());
         Category category = categoryRepository.findById(UUID.fromString(id)).orElseThrow(
                 () -> new ResourceNotFoundException("Post", "id", id)
         );
@@ -71,16 +74,24 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public MessageResponseDTO deleteCategory(String id) {
-        Category category = categoryRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResourceNotFoundException("Post", "id", id)
-        );
+        Assert.notNull(id, "Please , provide a valid category id.");
 
-        category.setActive(false);
         try {
-            categoryRepository.save(category);
-            return new MessageResponseDTO("Category with id : " + category.getId() + " is deleted.");
+            Category category = categoryRepository.findById(UUID.fromString(id)).orElseThrow(
+                    () -> new ResourceNotFoundException("Category", "id", id)
+            );
+
+            category.setActive(false);
+            Category categoryDeleted = categoryRepository.save(category);
+            return new MessageResponseDTO("Category with id : " + categoryDeleted.getId() + " is deleted.");
         } catch (Exception e) {
             throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    private void checkValidateAndSanitizeInput(String categoryName) {
+        if (categoryName.isEmpty() || categoryName.isBlank() || categoryName.length() > 20) {
+            throw new IllegalArgumentException("Please , provide a valid category less than 20 characters.");
         }
     }
 }

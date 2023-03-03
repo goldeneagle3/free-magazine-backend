@@ -3,6 +3,7 @@ package com.serbest.magazine.backend.mapper;
 import com.serbest.magazine.backend.dto.category.CategoryRequestDTO;
 import com.serbest.magazine.backend.dto.category.CategoryResponseDTO;
 import com.serbest.magazine.backend.entity.Category;
+import jakarta.validation.ValidationException;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -1,10 +1,10 @@
 package com.serbest.magazine.backend.dto.category;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.Length;
 
 @Data
 @NoArgsConstructor
@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class CategoryRequestDTO {
 
     @NotBlank(message = "Fill in the name field!")
-    @Size(max = 20,message = "Category's name cannot be more than 20 characters.")
+    @Length(max = 20, message = "Category's name cannot be more than 20 characters.")
     private String name;
 }
