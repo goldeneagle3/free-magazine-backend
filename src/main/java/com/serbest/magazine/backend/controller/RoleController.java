@@ -2,8 +2,10 @@ package com.serbest.magazine.backend.controller;
 
 import com.serbest.magazine.backend.dto.auth.RoleRequestDTO;
 import com.serbest.magazine.backend.dto.auth.RoleResponseDTO;
+import com.serbest.magazine.backend.dto.general.MessageResponseDTO;
 import com.serbest.magazine.backend.service.RoleService;
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
@@ -21,17 +23,17 @@ public class RoleController {
     }
 
     @PostMapping
-    private ResponseEntity<String> createRole(@RequestBody RoleRequestDTO requestDTO){
+    private ResponseEntity<MessageResponseDTO> createRole(@Valid @RequestBody RoleRequestDTO requestDTO) {
         return ResponseEntity.ok(roleService.createRole(requestDTO));
     }
 
-    @PatchMapping("/{roleName}")
-    private ResponseEntity<String> updateRole(@PathVariable String roleName,@RequestBody RoleRequestDTO requestDTO){
-        return ResponseEntity.ok(roleService.updateRole(roleName,requestDTO));
+    @PutMapping("/{roleName}")
+    private ResponseEntity<MessageResponseDTO> updateRole(@PathVariable String roleName, @Valid @RequestBody RoleRequestDTO requestDTO) {
+        return ResponseEntity.ok(roleService.updateRole(roleName, requestDTO));
     }
 
     @GetMapping
-    private ResponseEntity<List<RoleResponseDTO>> getRoles(){
+    private ResponseEntity<List<RoleResponseDTO>> getRoles() {
         return ResponseEntity.ok(roleService.getRoles());
     }
 }

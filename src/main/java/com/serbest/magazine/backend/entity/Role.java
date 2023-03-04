@@ -20,14 +20,19 @@ public class Role {
     public Role() {
     }
 
+    public Role(String name) {
+        this.name = name;
+    }
+
+    public Role(UUID id, String role) {
+        this.id = id;
+        this.name = role;
+    }
+
     public Role(UUID id, String name, Set<Author> authors) {
         this.id = id;
         this.name = name;
         this.authors = authors;
-    }
-
-    public Role(String name) {
-        this.name = name;
     }
 
     public UUID getId() {
