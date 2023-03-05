@@ -5,9 +5,13 @@ import com.serbest.magazine.backend.dto.category.CategoryRequestDTO;
 import com.serbest.magazine.backend.dto.category.CategoryResponseDTO;
 import com.serbest.magazine.backend.dto.general.MessageResponseDTO;
 import com.serbest.magazine.backend.service.CategoryService;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -47,6 +51,28 @@ class CategoryControllerTest {
     @MockBean
     private CategoryService categoryService;
 
+    @BeforeEach
+    void setUp() {
+        RestAssuredMockMvc.mockMvc(mockMvc);
+    }
+
+    @Test
+    void RA_test_createCategory_shouldAllowCategoriesRetrievalWithoutAuthentication(){
+        CategoryResponseDTO responseDTO = new CategoryResponseDTO(UUID.randomUUID(),"siyaset",2);
+        CategoryResponseDTO responseDTO2 = new CategoryResponseDTO(UUID.randomUUID(),"hukuk",5);
+        Mockito.when(categoryService.getAllCategory()).thenReturn(Arrays.asList(responseDTO,responseDTO2));
+
+        RestAssuredMockMvc
+                .given()
+                    .auth().none()
+                .when()
+                .   get("/api/administration/categories")
+                .then()
+                    .statusCode(200)
+                    .body("$.size()", Matchers.equalTo(2))
+                    .body("[0].name", Matchers.equalTo("siyaset"))
+                    .body("[1].name", Matchers.equalTo("hukuk"));
+    }
 
     @Test
     @WithMockUser(username = "test_user", password = "password123", roles = "ADMIN")
