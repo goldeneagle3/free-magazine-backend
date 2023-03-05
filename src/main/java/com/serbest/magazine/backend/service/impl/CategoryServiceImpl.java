@@ -76,11 +76,11 @@ public class CategoryServiceImpl implements CategoryService {
     public MessageResponseDTO deleteCategory(String id) {
         Assert.notNull(id, "Please , provide a valid category id.");
 
-        try {
-            Category category = categoryRepository.findById(UUID.fromString(id)).orElseThrow(
-                    () -> new ResourceNotFoundException("Category", "id", id)
-            );
+        Category category = categoryRepository.findById(UUID.fromString(id)).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "id", id)
+        );
 
+        try {
             category.setActive(false);
             Category categoryDeleted = categoryRepository.save(category);
             return new MessageResponseDTO("Category with id : " + categoryDeleted.getId() + " is deleted.");

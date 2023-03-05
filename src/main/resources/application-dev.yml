@@ -4,7 +4,7 @@ spring:
       auto-commit: false
     url: jdbc:postgresql://localhost:5432/magazine
     username: postgres
-    password: "Mal.asiye3"
+    password: "****"
   jpa:
     properties:
       hibernate:

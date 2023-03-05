@@ -6,6 +6,8 @@ import com.serbest.magazine.backend.dto.contact.ContactResponseDTO;
 import com.serbest.magazine.backend.dto.general.MessageResponseDTO;
 import com.serbest.magazine.backend.service.ContactService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +26,7 @@ public class ContactController {
 
     @PostMapping(value = "/contact")
     public ResponseEntity<MessageResponseDTO> contactUsSendMessage(@Valid @RequestBody ContactRequestDTO requestDTO) {
-        return ResponseEntity.ok(contactService.sendMessage(requestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(contactService.sendMessage(requestDTO));
     }
 
     @GetMapping(value = "/administration/contact")

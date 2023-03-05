@@ -99,9 +99,8 @@ class CategoryServiceImplIntegrationTest {
     public void testIntegration_deleteCategory_WrongGivenId() {
         String categoryName = generateRandomCategoryName();
         CategoryRequestDTO requestDTO = new CategoryRequestDTO(categoryName);
-        CategoryRequestDTO requestUpdateDTO = new CategoryRequestDTO("Siyaset");
 
-        Category category = categoryRepository.save(categoryMapper.categoryRequestToCategory(requestDTO));
+        categoryRepository.save(categoryMapper.categoryRequestToCategory(requestDTO));
         assertThrows(
                 ResourceNotFoundException.class,
                 () -> categoryService.deleteCategory(UUID.randomUUID().toString())
