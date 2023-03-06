@@ -6,6 +6,7 @@ import com.serbest.magazine.backend.dto.comment.CommentUpdateRequestDTO;
 import com.serbest.magazine.backend.dto.general.MessageResponseDTO;
 import com.serbest.magazine.backend.service.CommentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class CommentController {
 
     @PostMapping
     public ResponseEntity<CommentResponseDTO> createComment(@Valid @RequestBody CommentRequestDTO requestDTO) {
-        return ResponseEntity.ok(commentService.createComment(requestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(requestDTO));
     }
 
     @GetMapping("/byPost/{postId}")

@@ -5,6 +5,7 @@ import com.serbest.magazine.backend.service.PostService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,12 +28,12 @@ public class PostController {
 
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<PostCreateResponseDTO> createPost(@Valid @ModelAttribute PostRequestDTO requestDTO) throws IOException {
-        return ResponseEntity.ok(postService.createPost(requestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(requestDTO));
     }
 
     @PreAuthorize("hasRole('ROLE_EDITOR')")
     @PostMapping(value = "/editor/createPost", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostCreateResponseDTO> createPost(@Valid @ModelAttribute PostCreateEditorRequestDTO requestDTO) throws IOException {
+    public ResponseEntity<PostCreateResponseDTO> createPostEditor(@Valid @ModelAttribute PostCreateEditorRequestDTO requestDTO) throws IOException {
         return ResponseEntity.ok(postService.createPostEditor(requestDTO));
     }
 
