@@ -40,7 +40,7 @@ public class CommentController {
     }
 
     @PutMapping("/updateComment/{id}")
-    public ResponseEntity<CommentResponseDTO> updateComment(@PathVariable String id, @RequestBody CommentUpdateRequestDTO requestDTO) throws AccessDeniedException {
+    public ResponseEntity<CommentResponseDTO> updateComment(@PathVariable String id, @Valid @RequestBody CommentUpdateRequestDTO requestDTO) throws AccessDeniedException {
         return ResponseEntity.ok(commentService.updateComment(id,requestDTO.getContent()));
     }
 }

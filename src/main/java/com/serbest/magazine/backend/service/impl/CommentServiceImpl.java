@@ -15,6 +15,7 @@ import com.serbest.magazine.backend.repository.PostRepository;
 import com.serbest.magazine.backend.service.CommentService;
 
 import com.serbest.magazine.backend.security.CheckAuthorization;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,23 +49,29 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
+        validateAndSanitizeRoleName("PostId", requestDTO.getPostId());
+        validateAndSanitizeRoleName("Content", requestDTO.getContent());
 
         SecurityContext context = SecurityContextHolder.getContext();
         String usernameOrEmail = context.getAuthentication().getName();
 
         Author user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).orElseThrow(
-                () -> new ResourceNotFoundException("Author", "usernameOrEmail", Long.parseLong(context.getAuthentication().getName()))
+                () -> new ResourceNotFoundException("Author", "usernameOrEmail", context.getAuthentication().getName())
         );
 
         Post post = postRepository.findById(UUID.fromString(requestDTO.getPostId())).orElseThrow(
-                () -> new ResourceNotFoundException("Post", "id", Long.parseLong(requestDTO.getPostId()))
+                () -> new ResourceNotFoundException("Post", "id", requestDTO.getPostId())
         );
 
-        Comment comment = new Comment(requestDTO.getContent(), post, user);
+        try {
+            return commentMapper.commentToCommentResponseDTO(
+                    commentRepository.save(new Comment(requestDTO.getContent(), post, user))
+            );
+        } catch (Exception e) {
+            throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
-        commentRepository.save(comment);
 
-        return commentMapper.commentToCommentResponseDTO(comment);
     }
 
     @Override
@@ -79,6 +86,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment findById(String id) {
+        validateAndSanitizeRoleName("CommentId", id);
         return commentRepository.findById(UUID.fromString(id)).orElseThrow(
                 () -> new ResourceNotFoundException("Comment", "id", id)
         );
@@ -86,17 +94,19 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public MessageResponseDTO deleteById(String id) throws AccessDeniedException {
+        validateAndSanitizeRoleName("CommentId", id);
         Comment comment = getComment(id);
-        try {
-            commentRepository.deleteById(comment.getId());
-            return new MessageResponseDTO("Comment with id : " + id.toString() + " is deleted.");
-        } catch (Exception e) {
-            throw new CustomApplicationException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
+
+        commentRepository.deleteById(comment.getId());
+        return new MessageResponseDTO("Comment with id : " + id + " is deleted.");
+
     }
 
     @Override
     public CommentResponseDTO updateComment(String id, String content) throws AccessDeniedException {
+        validateAndSanitizeRoleName("CommentId", id);
+        validateAndSanitizeRoleName("Content", content);
+
         Comment comment = getComment(id);
 
         comment.setContent(content);
@@ -104,13 +114,21 @@ public class CommentServiceImpl implements CommentService {
         return commentMapper.commentToCommentResponseDTO(commentRepository.save(comment));
     }
 
-    private Comment getComment(String id) throws AccessDeniedException {
+    public Comment getComment(String id) throws AccessDeniedException {
 
         Comment comment = commentRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResourceNotFoundException("Comment", "id", Long.parseLong(id))
+                () -> new ResourceNotFoundException("Comment", "id", id)
         );
+
         checkAuthorization.checkUser(comment.getAuthor());
 
         return comment;
+    }
+
+    private void validateAndSanitizeRoleName(String fieldName, String fieldValue) {
+        Assert.notNull(fieldValue, "Provide a valid " + fieldName + " , please.");
+        if (fieldValue.isEmpty() || fieldValue.isBlank()) {
+            throw new IllegalArgumentException("Provide a valid " + fieldName + " , please.");
+        }
     }
 }

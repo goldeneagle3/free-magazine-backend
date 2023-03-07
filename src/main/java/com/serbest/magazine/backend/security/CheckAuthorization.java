@@ -2,6 +2,7 @@ package com.serbest.magazine.backend.security;
 
 import com.google.common.base.Strings;
 import com.serbest.magazine.backend.entity.Author;
+import com.serbest.magazine.backend.exception.ResourceNotFoundException;
 import com.serbest.magazine.backend.repository.AuthorRepository;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +19,7 @@ public class CheckAuthorization {
         this.authorRepository = authorRepository;
     }
 
-    public final Author checkUser(Author author) throws AccessDeniedException {
+    public Author checkUser(Author author) throws AccessDeniedException {
         SecurityContext context = SecurityContextHolder.getContext();
         String usernameOrEmail = context.getAuthentication().getName();
 
@@ -26,7 +27,10 @@ public class CheckAuthorization {
             throw new AccessDeniedException("You are not allowed to do that!");
         }
 
-        Author registeredUser = authorRepository.findByUsernameOrEmail(usernameOrEmail,usernameOrEmail).get();
+        Author registeredUser = authorRepository.findByUsernameOrEmail(usernameOrEmail,usernameOrEmail).orElseThrow(
+                () -> new ResourceNotFoundException("Author", "usernameOrEmail", usernameOrEmail)
+        );
+
 
         if (author != registeredUser){
             throw new AccessDeniedException("You are not allowed to do that!");
