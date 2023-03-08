@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -322,5 +323,18 @@ public class Author {
         public Author build() {
             return new Author(this);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Author author = (Author) o;
+        return id.equals(author.id) && username.equals(author.username) && email.equals(author.email) && Objects.equals(firstName, author.firstName) && Objects.equals(lastName, author.lastName) && Objects.equals(description, author.description) && Objects.equals(password, author.password) && Objects.equals(active, author.active) && Objects.equals(posts, author.posts) && Objects.equals(comments, author.comments) && Objects.equals(likes, author.likes) && Objects.equals(profileImage, author.profileImage) && Objects.equals(roles, author.roles) && Objects.equals(createDateTime, author.createDateTime) && Objects.equals(updateDateTime, author.updateDateTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, email, firstName, lastName, description, password, active, posts, comments, likes, profileImage, roles, createDateTime, updateDateTime);
     }
 }

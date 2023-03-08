@@ -28,11 +28,11 @@ public class CheckAuthorization {
         }
 
         Author registeredUser = authorRepository.findByUsernameOrEmail(usernameOrEmail,usernameOrEmail).orElseThrow(
-                () -> new ResourceNotFoundException("Author", "usernameOrEmail", usernameOrEmail)
+                () -> new AccessDeniedException("You are not allowed to do that!")
         );
 
 
-        if (author != registeredUser){
+        if (!registeredUser.getUsername().equals(author.getUsername())){
             throw new AccessDeniedException("You are not allowed to do that!");
         }
 
