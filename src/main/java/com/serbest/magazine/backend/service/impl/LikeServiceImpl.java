@@ -2,10 +2,12 @@ package com.serbest.magazine.backend.service.impl;
 
 import com.google.common.base.Strings;
 import com.serbest.magazine.backend.dto.like.LikeRequestDTO;
+import com.serbest.magazine.backend.dto.like.LikeResponseDTO;
 import com.serbest.magazine.backend.entity.Author;
 import com.serbest.magazine.backend.entity.Comment;
 import com.serbest.magazine.backend.entity.Like;
 import com.serbest.magazine.backend.entity.Post;
+import com.serbest.magazine.backend.exception.CustomApplicationException;
 import com.serbest.magazine.backend.exception.ResourceNotFoundException;
 import com.serbest.magazine.backend.repository.AuthorRepository;
 import com.serbest.magazine.backend.repository.LikeRepository;
@@ -13,6 +15,7 @@ import com.serbest.magazine.backend.repository.PostRepository;
 import com.serbest.magazine.backend.service.CommentService;
 import com.serbest.magazine.backend.service.LikeService;
 import com.serbest.magazine.backend.service.PostService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -40,9 +43,17 @@ public class LikeServiceImpl implements LikeService {
 
     /// Added CHECK of COALESCE((post)::int::boolean::int) + COALESCE((comment)::int::boolean::int) = 1;
     @Override
-    public void like(LikeRequestDTO requestDTO) throws AccessDeniedException {
-
+    public LikeResponseDTO like(LikeRequestDTO requestDTO) throws AccessDeniedException {
+        if (Strings.isNullOrEmpty(requestDTO.getPostId()) && Strings.isNullOrEmpty(requestDTO.getCommentId())) {
+            throw new CustomApplicationException(HttpStatus.BAD_REQUEST,
+                    "Post or Comment not found!");
+        }
         // (COALESCE(post::integer::boolean::integer, 0) + COALESCE(comment::integer::boolean::integer, 0)) = 1
+
+        if (!Strings.isNullOrEmpty(requestDTO.getPostId()) && !Strings.isNullOrEmpty(requestDTO.getCommentId())) {
+            throw new CustomApplicationException(HttpStatus.BAD_REQUEST,
+                    "You can not like both post and comment at the same time!");
+        }
 
         SecurityContext context = SecurityContextHolder.getContext();
         String usernameOrEmail = context.getAuthentication().getName();
@@ -51,7 +62,9 @@ public class LikeServiceImpl implements LikeService {
             throw new AccessDeniedException("You are not allowed to do that!");
         }
 
-        Author user = authorRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).get();
+        Author user = authorRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).orElseThrow(
+                () -> new ResourceNotFoundException("Author", "username or email", usernameOrEmail)
+        );
 
         Like like = null;
 
@@ -78,9 +91,9 @@ public class LikeServiceImpl implements LikeService {
             } else {
                 like = likeRepository.save(new Like(null, comment, user));
             }
-        } else {
-            return;
         }
+
+        return new LikeResponseDTO(like.getId());
     }
 
     @Override
