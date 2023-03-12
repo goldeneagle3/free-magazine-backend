@@ -47,7 +47,7 @@ public class Post {
     private LocalDateTime updateDateTime;
 
 
-    public Post(UUID postId, String title, String subtitle, String content,Boolean active, Category category,Author author, String postImage, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
+    public Post(UUID postId, String title, String subtitle, String content, Boolean active, Category category, Author author, String postImage, LocalDateTime createDateTime, LocalDateTime updateDateTime) {
         this.postId = postId;
         this.title = title;
         this.subtitle = subtitle;

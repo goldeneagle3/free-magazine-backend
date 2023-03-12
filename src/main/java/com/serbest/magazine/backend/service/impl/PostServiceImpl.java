@@ -17,6 +17,7 @@ import com.serbest.magazine.backend.service.PostService;
 import com.serbest.magazine.backend.security.CheckAuthorization;
 import com.serbest.magazine.backend.util.UploadImage;
 
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,31 +52,30 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostCreateResponseDTO createPost(PostRequestDTO requestDTO) throws IOException {
+    public PostCreateResponseDTO createPost(PostRequestDTO requestDTO) {
+        validateAndSanitizeFieldName("Title", requestDTO.getTitle());
+        validateAndSanitizeFieldName("Content", requestDTO.getContent());
+        validateAndSanitizeFieldName("Category", requestDTO.getCategory());
+
         SecurityContext context = SecurityContextHolder.getContext();
         String usernameOrEmail = context.getAuthentication().getName();
 
-        Optional<Author> user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+        Author user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail).orElseThrow(
+                () -> new ResourceNotFoundException("Author", "emailOrUsername", usernameOrEmail)
+        );
 
-        if (Strings.isNullOrEmpty(user.get().getEmail())) {
-            throw new ResourceNotFoundException("Author", "emailOrUsername", usernameOrEmail);
-        }
-
-        Optional<Category> category = categoryRepository
-                .findByName(requestDTO.getCategory());
-
-        if (category.isEmpty()) {
-            throw new ResourceNotFoundException("Category", "name", requestDTO.getCategory());
-        }
+        Category category = categoryRepository.findByName(requestDTO.getCategory()).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "name", requestDTO.getCategory())
+        );
 
         Post post = null;
         MultipartFile file = requestDTO.getImage();
         String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
-            imageModelService.upload(file.getInputStream(),filename);
+            imageModelService.upload(file.getInputStream(), filename);
             post = postMapper.postRequestDTOToPost(requestDTO);
-            post.setAuthor(user.get());
-            post.setCategory(category.get());
+            post.setAuthor(user);
+            post.setCategory(category);
             post.setPostImage(filename);
 
             return postMapper.postToPostCreateResponseDTO(postRepository.save(post));
@@ -85,7 +85,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostCreateResponseDTO createPostEditor(PostCreateEditorRequestDTO requestDTO) throws IOException {
+    public PostCreateResponseDTO createPostEditor(PostCreateEditorRequestDTO requestDTO) {
+        validateAndSanitizeFieldName("Title", requestDTO.getTitle());
+        validateAndSanitizeFieldName("Content", requestDTO.getContent());
+        validateAndSanitizeFieldName("Category", requestDTO.getCategory());
+        validateAndSanitizeFieldName("Author", requestDTO.getAuthor());
 
         Author user = userRepository.findByUsername(requestDTO.getAuthor()).orElseThrow(
                 () -> new ResourceNotFoundException("Author", "username", requestDTO.getAuthor())
@@ -100,7 +104,7 @@ public class PostServiceImpl implements PostService {
         MultipartFile file = requestDTO.getImage();
         String filename = UploadImage.changeNameWithTimeStamp(file.getOriginalFilename());
         try {
-            imageModelService.upload(file.getInputStream(),filename);
+            imageModelService.upload(file.getInputStream(), filename);
             post = postMapper.postCreateEditorRequestDTOToPost(requestDTO);
             post.setAuthor(user);
             post.setCategory(category);
@@ -196,6 +200,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostResponseDTO updatePost(String id, PostUpdateRequestDTO requestDTO) throws IOException {
+        validateAndSanitizeFieldName("Title", requestDTO.getTitle());
+        validateAndSanitizeFieldName("Content", requestDTO.getContent());
+        validateAndSanitizeFieldName("Category", requestDTO.getCategory());
         Post post = getPost(id);
 
         Category category = categoryRepository.findByName(requestDTO.getCategory()).orElseThrow(
@@ -204,7 +211,7 @@ public class PostServiceImpl implements PostService {
 
         String filename = null;
         if (!requestDTO.getImageProtect()) {
-            filename =  UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
+            filename = UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
         }
         post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
@@ -213,7 +220,7 @@ public class PostServiceImpl implements PostService {
         try {
             if (!requestDTO.getImageProtect()) {
                 post.setPostImage(filename);
-                imageModelService.upload(requestDTO.getImage().getInputStream(),filename);
+                imageModelService.upload(requestDTO.getImage().getInputStream(), filename);
             }
             return postMapper.postToPostResponseDTO(postRepository.save(post));
         } catch (Exception e) {
@@ -222,7 +229,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponseDTO updatePostEditor(String id, PostUpdateEditorRequestDTO requestDTO) throws IOException {
+    public PostResponseDTO updatePostEditor(String id, PostUpdateEditorRequestDTO requestDTO) {
+        validateAndSanitizeFieldName("Title", requestDTO.getTitle());
+        validateAndSanitizeFieldName("Content", requestDTO.getContent());
+        validateAndSanitizeFieldName("Category", requestDTO.getCategory());
+
         Post post = postRepository.findById(UUID.fromString(id)).orElseThrow(
                 () -> new ResourceNotFoundException("Post", "id", id)
         );
@@ -233,7 +244,7 @@ public class PostServiceImpl implements PostService {
 
         String filename = null;
         if (!requestDTO.getImageProtect()) {
-            filename =  UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
+            filename = UploadImage.changeNameWithTimeStamp(requestDTO.getImage().getOriginalFilename());
         }
         post.setCategory(category);
         post.setTitle(requestDTO.getTitle());
@@ -261,7 +272,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostResponseDTO> getPostsByCategory(String categoryName) {
-        Category category = categoryRepository.findByName(categoryName).orElseThrow(
+        categoryRepository.findByName(categoryName).orElseThrow(
                 () -> new ResourceNotFoundException("Category", "name", categoryName)
         );
         List<Post> posts = postRepository.findAllByCategoryNameAndActiveTrueOrderByCreateDateTimeDesc(categoryName);
@@ -273,6 +284,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostResponseDTO> findByUsername(String username) {
+        userRepository.findByUsername(username).orElseThrow(
+                () -> new ResourceNotFoundException("Author", "username", username)
+        );
         List<Post> posts = postRepository.findAllByAuthorUsernameAndActiveTrueOrderByCreateDateTimeDesc(username);
 
         return posts
@@ -283,17 +297,27 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Integer countsByCategoryName(String categoryName) {
+        categoryRepository.findByName(categoryName).orElseThrow(
+                () -> new ResourceNotFoundException("Category", "name", categoryName)
+        );
         return postRepository.countByCategoryNameAndActiveTrue(categoryName);
     }
 
     private Post getPost(String id) throws AccessDeniedException {
 
         Post post = postRepository.findById(UUID.fromString(id)).orElseThrow(
-                () -> new ResourceNotFoundException("Post", "id", Long.parseLong(id))
+                () -> new ResourceNotFoundException("Post", "id", id)
         );
         checkAuthorization.checkUser(post.getAuthor());
 
         return post;
+    }
+
+    private void validateAndSanitizeFieldName(String fieldName, String fieldValue) {
+        Assert.notNull(fieldValue, "Provide a valid " + fieldName + " , please.");
+        if (fieldValue.isEmpty() || fieldValue.isBlank()) {
+            throw new IllegalArgumentException("Provide a valid " + fieldName + " , please.");
+        }
     }
 
 }

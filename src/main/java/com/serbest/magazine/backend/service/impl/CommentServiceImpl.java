@@ -49,8 +49,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponseDTO createComment(CommentRequestDTO requestDTO) {
-        validateAndSanitizeRoleName("PostId", requestDTO.getPostId());
-        validateAndSanitizeRoleName("Content", requestDTO.getContent());
+        validateAndSanitizeFieldName("PostId", requestDTO.getPostId());
+        validateAndSanitizeFieldName("Content", requestDTO.getContent());
 
         SecurityContext context = SecurityContextHolder.getContext();
         String usernameOrEmail = context.getAuthentication().getName();
@@ -86,7 +86,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Comment findById(String id) {
-        validateAndSanitizeRoleName("CommentId", id);
+        validateAndSanitizeFieldName("CommentId", id);
         return commentRepository.findById(UUID.fromString(id)).orElseThrow(
                 () -> new ResourceNotFoundException("Comment", "id", id)
         );
@@ -94,7 +94,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public MessageResponseDTO deleteById(String id) throws AccessDeniedException {
-        validateAndSanitizeRoleName("CommentId", id);
+        validateAndSanitizeFieldName("CommentId", id);
         Comment comment = getComment(id);
 
         commentRepository.deleteById(comment.getId());
@@ -104,8 +104,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentResponseDTO updateComment(String id, String content) throws AccessDeniedException {
-        validateAndSanitizeRoleName("CommentId", id);
-        validateAndSanitizeRoleName("Content", content);
+        validateAndSanitizeFieldName("CommentId", id);
+        validateAndSanitizeFieldName("Content", content);
 
         Comment comment = getComment(id);
 
@@ -125,7 +125,7 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
-    private void validateAndSanitizeRoleName(String fieldName, String fieldValue) {
+    private void validateAndSanitizeFieldName(String fieldName, String fieldValue) {
         Assert.notNull(fieldValue, "Provide a valid " + fieldName + " , please.");
         if (fieldValue.isEmpty() || fieldValue.isBlank()) {
             throw new IllegalArgumentException("Provide a valid " + fieldName + " , please.");

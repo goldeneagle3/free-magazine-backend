@@ -20,6 +20,7 @@ import java.nio.file.*;
 public class ImageModelServiceImpl implements ImageModelService {
     private final Path rootProd = Paths.get("./uploads");
     private final Path rootDev = Paths.get("./uploads-dev");
+    private final Path rootTest = Paths.get("./uploads-test");
 
     @Value("${spring.profiles.active:}")
     private String activeProfile;
@@ -27,8 +28,10 @@ public class ImageModelServiceImpl implements ImageModelService {
     @Override
     public void init() {
         try {
-            File directory = new File("uploads-dev");
-            FileUtils.cleanDirectory(directory);
+            File directoryDev = new File("uploads-dev");
+            File directoryTest = new File("uploads-test");
+            FileUtils.cleanDirectory(directoryDev);
+            FileUtils.cleanDirectory(directoryTest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,9 +42,12 @@ public class ImageModelServiceImpl implements ImageModelService {
         Path root = null;
         if (this.activeProfile.equals("dev")) {
             root = this.rootDev;
+        } else if (this.activeProfile.equals("test")) {
+            root = this.rootTest;
         } else {
             root = this.rootProd;
         }
+
         try {
             Path file = root.resolve(filename);
             Resource resource = new UrlResource(file.toUri());
@@ -61,6 +67,8 @@ public class ImageModelServiceImpl implements ImageModelService {
         Path root = null;
         if (this.activeProfile.equals("dev")) {
             root = this.rootDev;
+        } else if (this.activeProfile.equals("test")) {
+            root = this.rootTest;
         } else {
             root = this.rootProd;
         }

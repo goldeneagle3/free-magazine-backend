@@ -34,7 +34,7 @@ public class PostController {
     @PreAuthorize("hasRole('ROLE_EDITOR')")
     @PostMapping(value = "/editor/createPost", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<PostCreateResponseDTO> createPostEditor(@Valid @ModelAttribute PostCreateEditorRequestDTO requestDTO) throws IOException {
-        return ResponseEntity.ok(postService.createPostEditor(requestDTO));
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPostEditor(requestDTO));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -63,7 +63,7 @@ public class PostController {
     }
 
     @GetMapping("/getPostsByAuthor/{username}")
-    public ResponseEntity<List<PostResponseDTO>> getPostsByUserId(@PathVariable String username){
+    public ResponseEntity<List<PostResponseDTO>> getPostsByUsername(@PathVariable String username){
         return ResponseEntity.ok(postService.findByUsername(username));
     }
 
@@ -73,6 +73,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getDeactivatedPost());
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_AUTHOR','ROLE_EDITOR','ROLE_ADMIN')")
     @PutMapping("/deactivatePost/{id}")
     public ResponseEntity<PostResponseDTO> deactivatePost(@PathVariable String id) throws AccessDeniedException {
         return ResponseEntity.ok(postService.deactivatePost(id));
@@ -85,14 +86,14 @@ public class PostController {
     }
 
     @PutMapping(value = "/updatePost/{id}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostResponseDTO> updatePost(@PathVariable String id,@ModelAttribute PostUpdateRequestDTO requestDTO)
+    public ResponseEntity<PostResponseDTO> updatePost(@PathVariable String id,@Valid @ModelAttribute PostUpdateRequestDTO requestDTO)
             throws IOException {
         return ResponseEntity.ok(postService.updatePost(id,requestDTO));
     }
 
     @PreAuthorize("hasRole('ROLE_EDITOR')")
     @PutMapping(value = "/editor/updatePost/{id}",consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<PostResponseDTO> updatePostForEditor(@PathVariable String id,@ModelAttribute PostUpdateEditorRequestDTO requestDTO)
+    public ResponseEntity<PostResponseDTO> updatePostForEditor(@PathVariable String id,@Valid @ModelAttribute PostUpdateEditorRequestDTO requestDTO)
             throws IOException {
         return ResponseEntity.ok(postService.updatePostEditor(id,requestDTO));
     }

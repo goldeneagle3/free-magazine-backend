@@ -51,10 +51,10 @@ class CommentServiceImplTest {
     PostRepository postRepository;
 
     @Mock
-    CheckAuthorization checkAuthorization;
+    AuthorRepository authorRepository;
 
     @Mock
-    AuthorRepository authorRepository;
+    CheckAuthorization checkAuthorization;
 
     @Test
     public void test_createComment_withSuccess() {
